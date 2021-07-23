@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Facebook Login JavaScript Example</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <script>
+      function statusChangeCallback(response) {
+        console.log('statusChangeCallback');
+        console.log(response);
+        if (response.status === 'connected') {
+          testAPI();
+        } else {
+          document.getElementById('status').innerHTML =
+            'Please log ' + 'into this webpage.';
+        }
+      }
+
+      function checkLoginState() {
+        FB.getLoginStatus(function (response) {
+          statusChangeCallback(response);
+        });
+      }
+
+      window.fbAsyncInit = function () {
+        FB.init({
+          appId: '555098695910330',
+          cookie: true,
+          xfbml: true,
+          version: 'v11.0',
+        });
+
+        FB.getLoginStatus(function (response) {
+          statusChangeCallback(response);
+        });
+      };
+
+      function testAPI() {
+        // Testing Graph API after login.  See statusChangeCallback() for when this call is made.
+        window.location = '/homepage';
+        console.log('Welcome!  Fetching your information.... ');
+        FB.api('/me', function (response) {
+          console.log('Successful login for: ' + JSON.stringify(response));
+          $.post('/postmethod', {
+            javascript_data: JSON.stringify(response),
+          });
+          document.getElementById('status').innerHTML =
+            'Thanks for logging in, ' + response.name + '!';
+        });
+
+        FB.api(
+          '/me/messages?100587562312130/conversations/messages?access_token?EAAH42ZCyVw7oBAIEp0GAop3tGZACWW3TH7l5Y2LOkbfhZA1EplmI4ZCAF3yycF4Kq6ZAkRPUQkfvpL2ZC7dLkeefHJPMg9h6fcGhTXar0UzyJNyFzMRWz2w1to1ZC6yqVJbbFsLTBUwJjvJX6idZBEv9WGGYoovZA7RbikSXOgaw0cVMaUe1qgtOS',
+          function (response) {
+            console.log(response);
+            if (response && !response.error) {
+              console.log(response);
+              /* handle the result */
+            }
+          }
+        );
+      }
+    </script>
+
+    <!-- The JS SDK Login Button -->
+
+    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+    </fb:login-button>
+
+    <div id="status"></div>
+
+    <!-- Load the JS SDK asynchronously -->
+    <script
+      async
+      defer
+      crossorigin="anonymous"
+      src="https://connect.facebook.net/en_US/sdk.js"
+    ></script>
+  </body>
+</html>
